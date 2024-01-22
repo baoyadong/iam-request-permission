@@ -11,13 +11,12 @@ supported_platforms = {"linux", "macosx"}
 
 description = {
   summary = "request permission plugin for ms-iam services",
-  homepage = "http://ms-iam",
-  license = "private"
+  -- homepage = "http://ms-iam",
+  -- license = "private"
 }
 
 source = {
   url = "git://github.com/baoyadong/iam-request-permission",
-  tag = "v0.0.1"
 }
 
 dependencies = {

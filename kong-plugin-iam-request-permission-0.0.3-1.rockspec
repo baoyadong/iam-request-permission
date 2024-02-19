@@ -1,5 +1,5 @@
 local plugin_name = "iam-request-permission"
-version = "0.0.1-1"
+version = "0.0.3-1"
 local package_name = "kong-plugin-" .. plugin_name
 
 -- The version '1.0.0' is the source code version, the trailing '1' is the version of this rockspec.
@@ -22,10 +22,14 @@ description = {
 
 source = {
   url = "git://github.com/baoyadong/iam-request-permission",
+  branch = "main",
 }
 
 dependencies = {
-  "lua >= 5.1"
+  "lua >= 5.1",
+  -- "lua-cjson = 2.1.0.9-1",
+  "lua-resty-http >= 0.16",
+  "lua-resty-redis >= 0.27",
 }
 
 build = {

@@ -10,32 +10,36 @@ local KONG_ENV = 'dev'
 local REDIS_CACHE_TTL = 5 * 60 -- 缓存时间，单位秒
 
 -- 获取当前环境的配置
-local function get_enviromnent_config()
-  if KONG_ENV == 'production' then
-    return {
-      permission_api_url = "http://ms-iam/v1/permission/path",
-      redis_host = "production-redis-host",
-      redis_port = 6379,
-    }
-  end
-  if KONG_ENV== 'test' then
-    return {
-      permission_api_url = "http://ms-iam/v1/permission/path",
-      redis_host = "production-redis-host",
-      redis_port = 6379,
-    }
-  end
-  return {
-    permission_api_url = "http://ms-iam/v1/permission/path",
-    redis_host = "development-redis-host",
-    redis_port = 6379,
-  }
-end
+-- function get_enviromnent_config()
+--   if KONG_ENV == 'production' then
+--     return {
+--       permission_api_url = "http://ms-iam/v1/permission/path",
+--       redis_host = "production-redis-host",
+--       redis_port = 6379,
+--     }
+--   end
+--   if KONG_ENV== 'test' then
+--     return {
+--       permission_api_url = "http://ms-iam/v1/permission/path",
+--       redis_host = "production-redis-host",
+--       redis_port = 6379,
+--     }
+--   end
+--   return {
+--     permission_api_url = "http://ms-iam/v1/permission/path",
+--     redis_host = "development-redis-host",
+--     redis_port = 6379,
+--   }
+-- end
 
 -- 检查权限并缓存到Redis
 local function has_permission(path, headers)
   -- 获取当前环境配置
-  local env_config = get_environment_config()
+  local env_config = {
+    permission_api_url = "http://ms-iam/v1/permission/path",
+    redis_host = "development-redis-host",
+    redis_port = 6379
+  }
 
   local authorization_header = headers['Authorization']
   local action = headers['method']
@@ -82,7 +86,6 @@ local function has_permission(path, headers)
 
   local permission_info = cjson.decode(res.body)
   kong.log.debug("permission_info: ", permission_info)
-  
   -- 将权限信息缓存到Redis
   -- red:setex(cache_key, REDIS_CACHE_TTL, cjson.encode(permission_info))
 
@@ -98,6 +101,7 @@ local RequestHandler = {
 function RequestHandler:access(conf)
   -- 获取当前请求的路径
   local request_path = kong.request.get_path()
+  kong.log.info("Request path: ", request_path)
   local headers = kong.request.get_headers()
   local permission = has_permission(request_path, headers)
   if not permission then
@@ -105,7 +109,6 @@ function RequestHandler:access(conf)
     kong.response.exit(403, { message = "Forbidden: You do not have permission to access this resource." })
   end
   -- 添加日志记录
-  kong.log.info("Request path: ", request_path)
   kong.log.info("Permission info: ", cjson.encode(permission))
 end
 

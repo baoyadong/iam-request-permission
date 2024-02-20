@@ -22,7 +22,7 @@ build: $(LUAROCKS)
 
 $(LUAROCKS): $(ROCKSPECS)
 	@echo == build $@
-	luarocks make $@.rockspec
+	luarocks build $@.rockspec
 
 pack: $(ROCKPACKS)
   @echo == pack finished
@@ -30,7 +30,7 @@ pack: $(ROCKPACKS)
 %.all.rock: %.rockspec
 	@n=`echo $* | sed -e 's/\(^[a-z-]*\).*/\1/g' | sed -e '$$ s/.$$//'` ; \
    v=`echo $* | sed 's/[a-z]//g' | sed 's/^\-*//g'` ; \
-	  echo = $$n; \
-		echo = $$v; \
+	  echo $$n; \
+		echo $$v; \
       luarocks pack $$n $$v;
   @echo == success pack $*

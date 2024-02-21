@@ -41,9 +41,12 @@ local function has_permission(path, headers)
     redis_port = 6379
   }
 
-  local authorization_header = headers['Authorization']
-  local action = headers['method']
-  local appId = headers['appId']
+  kong.log("headers")
+  kong.log.inspect(headers)
+  local authorization_header = headers.authorization
+  local action = headers.method
+  local appId = headers["x-system-identify"]
+  kong.log(authorization_header, action, appId)
 
   -- 尝试从Redis缓存获取权限信息
   -- local red = redis:new()
@@ -73,7 +76,7 @@ local function has_permission(path, headers)
     headers = {
       ["Content-Type"] = "application/json",
       ["Content-Length"] = #request_body,
-      ["Authorization"]=authorization_header,
+      ["Authorization"] = authorization_header,
       headers=headers
     },
     -- ssl_verify = false,  -- 仅在测试阶段，不建议在生产中使用
@@ -85,7 +88,8 @@ local function has_permission(path, headers)
 
   kong.log.inspect(res)
   local permission_info = cjson.decode(res.body)
-  kong.log("permission_info: ", permission_info)
+  kong.log("permission_info: ")
+  kong.log.inspect(permission_info)
   -- 将权限信息缓存到Redis
   -- red:setex(cache_key, REDIS_CACHE_TTL, cjson.encode(permission_info))
 

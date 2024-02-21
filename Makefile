@@ -22,7 +22,7 @@ build: $(LUAROCKS)
 
 $(LUAROCKS): $(ROCKSPECS)
 	@echo == build $@
-	luarocks build $@.rockspec
+	luarocks make --pack-binary-rock $@.rockspec
 
 pack: $(ROCKPACKS)
   @echo == pack finished

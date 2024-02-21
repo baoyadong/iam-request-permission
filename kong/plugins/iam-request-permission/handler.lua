@@ -36,7 +36,7 @@ local REDIS_CACHE_TTL = 5 * 60 -- 缓存时间，单位秒
 local function has_permission(path, headers)
   -- 获取当前环境配置
   local env_config = {
-    permission_api_url = "http://ms-iam/v1/permission/path",
+    permission_api_url = "http://172.16.255.27:46473/ms-iam/v1/permission/path",
     redis_host = "development-redis-host",
     redis_port = 6379
   }
@@ -78,14 +78,14 @@ local function has_permission(path, headers)
     },
     -- ssl_verify = false,  -- 仅在测试阶段，不建议在生产中使用
   })
-
   if not res or res.status ~= 200 then
     kong.log.err("Failed to request permission API: ", err)
     return false
   end
 
+  kong.log.inspect(res)
   local permission_info = cjson.decode(res.body)
-  kong.log.debug("permission_info: ", permission_info)
+  kong.log("permission_info: ", permission_info)
   -- 将权限信息缓存到Redis
   -- red:setex(cache_key, REDIS_CACHE_TTL, cjson.encode(permission_info))
 
@@ -101,7 +101,7 @@ local RequestHandler = {
 function RequestHandler:access(conf)
   -- 获取当前请求的路径
   local request_path = kong.request.get_path()
-  kong.log.info("Request path: ", request_path)
+  kong.log("request_path: ", request_path)
   local headers = kong.request.get_headers()
   local permission = has_permission(request_path, headers)
   if not permission then
@@ -109,7 +109,7 @@ function RequestHandler:access(conf)
     kong.response.exit(403, { message = "Forbidden: You do not have permission to access this resource." })
   end
   -- 添加日志记录
-  kong.log.info("Permission info: ", cjson.encode(permission))
+  kong.log("Permission Info: ", cjson.encode(permission))
 end
 
 return RequestHandler

@@ -36,7 +36,7 @@ local REDIS_CACHE_TTL = 5 * 60 -- 缓存时间，单位秒
 local function has_permission(path, headers)
   -- 获取当前环境配置
   local env_config = {
-    permission_api_url = "http://172.16.255.27:46473/ms-iam/v1/permission/path",
+    permission_api_url = "http://172.16.255.27:46473/v1/permission/path",
     redis_host = "development-redis-host",
     redis_port = 6379
   }
@@ -89,7 +89,10 @@ local function has_permission(path, headers)
   -- 将权限信息缓存到Redis
   -- red:setex(cache_key, REDIS_CACHE_TTL, cjson.encode(permission_info))
 
-  return permission_info
+  if permission_info ~= nil and permission_info.data ~= nil then
+    return permission_info.data
+  end
+  return false
 end
 
 
@@ -108,8 +111,6 @@ function RequestHandler:access(conf)
     -- 没有权限，返回403 Forbidden
     kong.response.exit(403, { message = "Forbidden: You do not have permission to access this resource." })
   end
-  -- 添加日志记录
-  kong.log("Permission Info: ", cjson.encode(permission))
 end
 
 return RequestHandler

@@ -41,14 +41,14 @@ local function has_permission(path)
     redis_port = 6379
   }
 
-  local headers = kong.request.get_headers()
+  local headers = ngx.req.get_headers()
 
   kong.log("headers")
-  -- kong.log.inspect(headers)
-  local authorization_header = kong.request.get_header("authorization")
+  kong.log.inspect(headers)
+  local authorization_header = headers["authorization"]
   local action = kong.request.get_method()
-  local appId = kong.request.get_header("x-system-identify")
-  local userId = kong.request.get_header("x-user-id")
+  local appId = headers["x-system-identify"]
+  local userId = headers["x-user-id"]
   kong.log(authorization_header, action, appId, userId)
 
   -- 尝试从Redis缓存获取权限信息
@@ -111,6 +111,7 @@ local RequestHandler = {
 
 function RequestHandler:access(conf)
   -- 获取当前请求的路径
+  kong.log.inspect(conf)
   local request_path = kong.request.get_path()
   kong.log("request_path: ", request_path)
   local permission = has_permission(request_path)

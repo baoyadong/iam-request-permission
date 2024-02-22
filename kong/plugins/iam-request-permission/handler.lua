@@ -33,7 +33,7 @@ local REDIS_CACHE_TTL = 5 * 60 -- 缓存时间，单位秒
 -- end
 
 -- 检查权限并缓存到Redis
-local function has_permission(path, headers)
+local function has_permission(path)
   -- 获取当前环境配置
   local env_config = {
     permission_api_url = "http://172.16.255.27:46473/v1/permission/path",
@@ -41,12 +41,15 @@ local function has_permission(path, headers)
     redis_port = 6379
   }
 
+  local headers = kong.request.get_headers()
+
   kong.log("headers")
-  kong.log.inspect(headers)
-  local authorization_header = headers.authorization
-  local action = headers.method
-  local appId = headers["x-system-identify"]
-  kong.log(authorization_header, action, appId)
+  -- kong.log.inspect(headers)
+  local authorization_header = kong.request.get_header("authorization")
+  local action = kong.request.get_method()
+  local appId = kong.request.get_header("x-system-identify")
+  local userId = kong.request.get_header("x-user-id")
+  kong.log(authorization_header, action, appId, userId)
 
   -- 尝试从Redis缓存获取权限信息
   -- local red = redis:new()
@@ -77,6 +80,7 @@ local function has_permission(path, headers)
       ["Content-Type"] = "application/json",
       ["Content-Length"] = #request_body,
       ["Authorization"] = authorization_header,
+      ["x-user-id"] = userId,
       headers=headers
     },
     -- ssl_verify = false,  -- 仅在测试阶段，不建议在生产中使用
@@ -109,8 +113,7 @@ function RequestHandler:access(conf)
   -- 获取当前请求的路径
   local request_path = kong.request.get_path()
   kong.log("request_path: ", request_path)
-  local headers = kong.request.get_headers()
-  local permission = has_permission(request_path, headers)
+  local permission = has_permission(request_path)
   if not permission then
     -- 没有权限，返回403 Forbidden
     kong.response.exit(403, { message = "Forbidden: You do not have permission to access this resource." })

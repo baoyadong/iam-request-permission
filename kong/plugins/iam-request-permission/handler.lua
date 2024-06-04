@@ -5,6 +5,16 @@ local kong_meta = require "kong.meta"
 
 
 local KONG_ENV = 'dev'
+local whiteList = {"/ms-iam/v1/api/auth/login"}
+
+local function isInWhiteList(arr, val)
+  for index, value in ipairs(arr) do
+    if val == value then
+      return true
+    end
+  end
+  return false
+end
 
 
 local REDIS_CACHE_TTL = 5 * 60 -- 缓存时间，单位秒
@@ -92,7 +102,7 @@ local function has_permission(path)
 
   kong.log.inspect(res)
   local permission_info = cjson.decode(res.body)
-  kong.log("permission_info: ")
+  kong.log("permission_info: ", permission_info)
   kong.log.inspect(permission_info)
   -- 将权限信息缓存到Redis
   -- red:setex(cache_key, REDIS_CACHE_TTL, cjson.encode(permission_info))
@@ -114,6 +124,12 @@ function RequestHandler:access(conf)
   kong.log.inspect(conf)
   local request_path = kong.request.get_path()
   kong.log("request_path: ", request_path)
+  local isWhiteUrl = isInWhiteList(whiteList, request_path)
+  kong.log("isWhiteUrl: ", isWhiteUrl)
+  if isWhiteUrl then
+    return;
+  end
+
   local permission = has_permission(request_path)
   if not permission then
     -- 没有权限，返回403 Forbidden

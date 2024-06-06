@@ -82,10 +82,13 @@ local function has_permission(path)
   local permission_api_url = env_config.permission_api_url
 
   local request_body = {action=action, path=path}
+  local request_body_string = cjson.encode(request_body)
+  kong.log("request_body_string: ", request_body_string)
+
   local httpc = http.new()
   local res, err = httpc:request_uri(permission_api_url, {
     method = "POST",
-    body = cjson.encode(request_body),
+    body = request_body_string,
     headers = {
       ["Content-Type"] = "application/json",
       ["Content-Length"] = #request_body,
@@ -124,6 +127,10 @@ function RequestHandler:access(conf)
   kong.log.inspect(conf)
   local request_path = kong.request.get_path()
   kong.log("request_path: ", request_path)
+  if not request_path then
+    return;
+  end
+
   local isWhiteUrl = isInWhiteList(whiteList, request_path)
   kong.log("isWhiteUrl: ", isWhiteUrl)
   if isWhiteUrl then

@@ -90,13 +90,13 @@ local function has_permission(path)
     method = "POST",
     body = request_body_string,
     headers = {
-      ["Content-Type"] = "application/json",
+      ["Content-Type"] = "application/json;charset=UTF-8",
       ["Content-Length"] = #request_body,
       ["Authorization"] = authorization_header,
       ["x-user-id"] = userId,
       headers=headers
     },
-    -- ssl_verify = false,  -- 仅在测试阶段，不建议在生产中使用
+    ssl_verify = false,  -- 仅在测试阶段，不建议在生产中使用
   })
   if not res or res.status ~= 200 then
     kong.log.err("Failed to request permission API: ", err)

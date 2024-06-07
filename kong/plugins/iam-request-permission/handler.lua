@@ -1,5 +1,5 @@
 local http = require "resty.http"
-local cjson = require "kong.tools.cjson"
+local cjson = require "cjson"
 local redis = require "resty.redis"
 local kong_meta = require "kong.meta"
 

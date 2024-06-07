@@ -1,5 +1,5 @@
 local plugin_name = "iam-request-permission"
-version = "0.0.5-1"
+version = "0.0.6-1"
 local package_name = "kong-plugin-" .. plugin_name
 
 -- The version '1.0.0' is the source code version, the trailing '1' is the version of this rockspec.

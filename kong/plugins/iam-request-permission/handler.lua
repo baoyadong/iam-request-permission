@@ -84,6 +84,7 @@ local function has_permission(path)
   local request_body = {action=action, path=path}
   local request_body_string = cjson.encode(request_body)
   kong.log("request_body_string: ", request_body_string)
+  kong.log("request_body_string length: ", #request_body_string)
 
   local httpc = http.new()
   local res, err = httpc:request_uri(permission_api_url, {
@@ -91,7 +92,7 @@ local function has_permission(path)
     body = request_body_string,
     headers = {
       ["Content-Type"] = "application/json;charset=UTF-8",
-      ["Content-Length"] = #request_body,
+      -- ["Content-Length"] = #request_body_string,
       ["Authorization"] = authorization_header,
       ["x-user-id"] = userId,
       headers=headers

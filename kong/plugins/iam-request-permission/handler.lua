@@ -9,8 +9,10 @@ local whiteList = {
   "/",
   "/login/ms-iam/v1/api/auth/login",
   "/api/ms-iam/v1/user/token",
+  "/ms-iam/v1/user/token",
   "/login/ms-iam/v1/sso/callback",
-  "/api/ms-iam/v2/api/auth/logout"
+  "/api/ms-iam/v2/api/auth/logout",
+  "/ms-iam/v2/api/auth/logout",
 }
 
 function isSpecificFileType(filename)

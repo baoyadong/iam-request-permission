@@ -8,7 +8,9 @@ local KONG_ENV = 'dev'
 local whiteList = {
   "/",
   "/login/ms-iam/v1/api/auth/login",
-  "/ms-iam/v1/user/token"
+  "/api/ms-iam/v1/user/token",
+  "/login/ms-iam/v1/sso/callback",
+  "/api/ms-iam/v2/api/auth/logout"
 }
 
 function isSpecificFileType(filename)

@@ -5,7 +5,24 @@ local kong_meta = require "kong.meta"
 
 
 local KONG_ENV = 'dev'
-local whiteList = {"/ms-iam/v1/api/auth/login"}
+local whiteList = {
+  "/ms-iam/v1/api/auth/login",
+  "/ms-iam/v1/user/token"
+}
+
+function isSpecificFileType(filename)
+  -- 使用模式匹配来判断文件名是否以.html, .js, .css或图片扩展名结尾
+  return filename:match("%.html$") or
+         filename:match("%.js$") or
+         filename:match("%.css$") or
+         filename:match("%.png$") or
+         filename:match("%.jpg$") or
+         filename:match("%.jpeg$") or
+         filename:match("%.gif$") or
+         filename:match("%.bmp$") or
+         filename:match("%.readme$") or
+         filename:match("%.ico$")
+end
 
 local function isInWhiteList(arr, val)
   for index, value in ipairs(arr) do
@@ -132,9 +149,8 @@ function RequestHandler:access(conf)
     return;
   end
 
-  local isWhiteUrl = isInWhiteList(whiteList, request_path)
-  kong.log("isWhiteUrl: ", isWhiteUrl)
-  if isWhiteUrl then
+  if isSpecificFileType(request_path) or isInWhiteList(whiteList, request_path) then
+    kong.log("whiteList")
     return;
   end
 

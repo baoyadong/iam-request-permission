@@ -6,7 +6,8 @@ local kong_meta = require "kong.meta"
 
 local KONG_ENV = 'dev'
 local whiteList = {
-  "/ms-iam/v1/api/auth/login",
+  "/",
+  "/login/ms-iam/v1/api/auth/login",
   "/ms-iam/v1/user/token"
 }
 
@@ -21,7 +22,9 @@ function isSpecificFileType(filename)
          filename:match("%.gif$") or
          filename:match("%.bmp$") or
          filename:match("%.readme$") or
-         filename:match("%.ico$")
+         filename:match("%.ico$") or
+         filename:match("%.woff2$") or
+         filename:match("%.svg$")
 end
 
 local function isInWhiteList(arr, val)

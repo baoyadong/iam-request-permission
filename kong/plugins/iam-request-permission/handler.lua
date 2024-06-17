@@ -117,6 +117,11 @@ local function has_permission(path)
   kong.log("headers")
   kong.log.inspect(headers)
   local authorization_header = headers["authorization"]
+
+  if not authorization_header then
+    return true;
+  end
+
   local action = kong.request.get_method()
   local appId = headers["x-system-identify"]
   local userId = headers["x-user-id"]

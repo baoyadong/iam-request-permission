@@ -117,9 +117,6 @@ local function has_permission(path)
   kong.log("headers")
   kong.log.inspect(headers)
   local signature = headers["Signature"]
-  if signature then
-    return true;
-  end
 
   local authorization_header = headers["authorization"]
   if not authorization_header then
@@ -165,7 +162,8 @@ local function has_permission(path)
       -- ["Content-Length"] = #request_body_string,
       ["Authorization"] = authorization_header,
       ["x-user-id"] = userId,
-      headers=headers
+      ['Signature'] = signature,
+      headers=cjson.encode(headers)
     },
     ssl_verify = false,  -- 仅在测试阶段，不建议在生产中使用
   })

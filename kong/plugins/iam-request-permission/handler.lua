@@ -116,8 +116,12 @@ local function has_permission(path)
 
   kong.log("headers")
   kong.log.inspect(headers)
-  local authorization_header = headers["authorization"]
+  local signature = headers["Signature"]
+  if signature then
+    return true;
+  end
 
+  local authorization_header = headers["authorization"]
   if not authorization_header then
     return true;
   end

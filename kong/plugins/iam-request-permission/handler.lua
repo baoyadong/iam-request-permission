@@ -119,9 +119,9 @@ local function has_permission(path)
   local signature = headers["Signature"]
 
   local authorization_header = headers["authorization"]
-  if not authorization_header then
-    return true;
-  end
+  -- if not authorization_header then
+  --   return true;
+  -- end
 
   local action = kong.request.get_method()
   local appId = headers["x-system-identify"]

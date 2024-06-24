@@ -107,7 +107,10 @@ local REDIS_CACHE_TTL = 5 * 60 -- 缓存时间，单位秒
 local function has_permission(path)
   -- 获取当前环境配置
   local env_config = {
-    permission_api_url = "http://172.16.255.27:46473/v1/permission/path",
+    -- 开发环境
+    -- permission_api_url = "http://172.16.255.27:46473/v1/permission/path",
+    -- 线上
+    permission_api_url = "http://ms-iam/v1/permission/path",
     redis_host = "development-redis-host",
     redis_port = 6379
   }
